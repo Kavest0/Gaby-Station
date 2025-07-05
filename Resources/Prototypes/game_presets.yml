@@ -63,7 +63,7 @@
   showInVote: false # Gabystation - desativado por enquanto
   description: survival-description
   rules:
-    - MeteorSwarmScheduler
+    # - MeteorSwarmScheduler
     - SpaceTrafficControlEventScheduler
     - BasicRoundstartVariation
     - LavalandStormScheduler # Lavaland Change
@@ -149,7 +149,7 @@
   description: extended-description
   rules:
   - BasicStationEventScheduler
-  - MeteorSwarmScheduler
+  # - MeteorSwarmScheduler
   - SpaceTrafficControlEventScheduler
   - BasicRoundstartVariation
   - LavalandStormScheduler # Lavaland Change
@@ -189,7 +189,7 @@
   description: secret-description
   rules:
     - BasicStationEventScheduler
-    - MeteorSwarmScheduler
+    # - MeteorSwarmScheduler
     - SpaceTrafficControlEventScheduler
     - BasicRoundstartVariation
     - LavalandStormScheduler # Lavaland Change
@@ -299,7 +299,7 @@
   rules:
   - Zombie
   - BasicStationEventScheduler
-  - MeteorSwarmScheduler
+  # - MeteorSwarmScheduler
   - SpaceTrafficControlEventScheduler
   - BasicRoundstartVariation
   - LavalandStormScheduler # Lavaland Change
