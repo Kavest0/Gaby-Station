@@ -86,6 +86,7 @@ using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 using Robust.Shared.Utility;
+using Serilog;
 
 namespace Content.Shared.Preferences.Loadouts;
 
@@ -145,6 +146,9 @@ public sealed partial class RoleLoadout : IEquatable<RoleLoadout>
         {
             EntityName = null;
             SelectedLoadouts.Clear();
+#if DEBUG
+            Log.Debug($"Ops, clear! {Role.Id}");
+#endif
             return;
         }
 
@@ -180,6 +184,9 @@ public sealed partial class RoleLoadout : IEquatable<RoleLoadout>
 
             // Data will get set below.
             SelectedLoadouts[groupProto] = new List<Loadout>();
+#if DEBUG
+            Log.Debug($"Ops, new? {groupProto.Id}");
+#endif
         }
 
         // Reset points to recalculate.
@@ -281,6 +288,9 @@ public sealed partial class RoleLoadout : IEquatable<RoleLoadout>
         foreach (var value in groupRemove)
         {
             SelectedLoadouts.Remove(value);
+#if DEBUG
+            Log.Debug($"Actually, get off {value}");
+#endif
         }
     }
 
@@ -386,7 +396,11 @@ public sealed partial class RoleLoadout : IEquatable<RoleLoadout>
     /// </summary>
     public bool AddLoadout(ProtoId<LoadoutGroupPrototype> selectedGroup, ProtoId<LoadoutPrototype> selectedLoadout, IPrototypeManager protoManager)
     {
-        var groupLoadouts = SelectedLoadouts[selectedGroup];
+        SelectedLoadouts.TryGetValue(selectedGroup, out var groupLoadouts); // Gaby change
+        //if (selected is null)
+        //    _sawmill.Warning($"Tried to get selected loadout value: {_groupProto.ID} but it was null in list! - List: {GetList(loadout.SelectedLoadouts)}");
+
+        groupLoadouts ??= new List<Loadout>(); // Gaby change
 
         // Need to unselect existing ones if we're at or above limit
         var limit = Math.Max(0, groupLoadouts.Count + 1 - protoManager.Index(selectedGroup).MaxLimit);

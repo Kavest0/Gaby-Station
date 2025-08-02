@@ -24,15 +24,20 @@ namespace Content.Client.Lobby.UI.Loadouts;
 [GenerateTypedNameReferences]
 public sealed partial class LoadoutGroupContainer : BoxContainer
 {
-    private readonly LoadoutGroupPrototype _groupProto;
+    [Dependency] private readonly ILogManager _logManager = default!;
 
+    private readonly LoadoutGroupPrototype _groupProto;
     public event Action<ProtoId<LoadoutPrototype>>? OnLoadoutPressed;
     public event Action<ProtoId<LoadoutPrototype>>? OnLoadoutUnpressed;
+    private ISawmill _sawmill = default!;
 
     public LoadoutGroupContainer(HumanoidCharacterProfile profile, RoleLoadout loadout, LoadoutGroupPrototype groupProto, ICommonSession session, IDependencyCollection collection)
     {
         RobustXamlLoader.Load(this);
+        IoCManager.InjectDependencies(this);
         _groupProto = groupProto;
+
+        _sawmill = _logManager.GetSawmill("loadout");
 
         RefreshLoadouts(profile, loadout, session, collection);
     }
@@ -77,6 +82,9 @@ public sealed partial class LoadoutGroupContainer : BoxContainer
         // Didn't use options because this is more robust in future.
 
         loadout.SelectedLoadouts.TryGetValue(_groupProto.ID, out var selected); // Gaby change
+        if (selected is null)
+            _sawmill.Warning($"Tried to get selected loadout value: {_groupProto.ID} but it was null in list! - List: {GetList(loadout.SelectedLoadouts)}");
+
         selected ??= new List<Loadout>(); // Gaby change
 
         foreach (var loadoutProto in _groupProto.Loadouts)
@@ -103,4 +111,26 @@ public sealed partial class LoadoutGroupContainer : BoxContainer
             LoadoutsContainer.AddChild(loadoutContainer);
         }
     }
+
+    private string GetList(Dictionary<ProtoId<LoadoutGroupPrototype>, List<Loadout>>? list)
+    {
+        if (list == null || list.Count == 0)
+            return "{NULL LIST}";
+
+        var result = list
+            .Select(pair =>
+            {
+                var groupId = pair.Key; // Você pode usar groupId.ToString() ou acessar algo mais amigável
+                var loadouts = pair.Value;
+
+                var loadoutNames = loadouts.Count > 0
+                    ? string.Join(", ", loadouts.Select(l => l.Prototype.ToString()))
+                    : "Nenhum";
+
+                return $"{groupId}: [{loadoutNames}]";
+            });
+
+        return string.Join(" | ", result);
+    }
+
 }

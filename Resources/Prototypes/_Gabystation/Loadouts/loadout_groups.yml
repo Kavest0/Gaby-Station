@@ -4,6 +4,7 @@
   id: GenericJumpsuitLoadout
   name: loadout-group-generic-jumpsuit
   minLimit: 1
+  maxLimite: 1
   exclusiveWith: INNERCLOTHING # Goobstation
   loadouts:
   - GreyJumpsuit
